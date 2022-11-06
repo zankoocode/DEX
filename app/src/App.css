@@ -1,0 +1,196 @@
+.not-connected-page {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+
+body {
+  background-color: rgb(245, 241, 237);
+  width: 100%;
+  height: 100%;
+}
+.zankoocodeDEX {
+  margin-top: 10%;
+ 
+}
+.connect-button {
+  width: 15%;
+  margin-top: 10%;
+  height: 12%;
+  padding: 2rem;
+  padding-bottom: 3.4rem;
+}
+
+footer {
+  margin-top: 40rem;
+  height: 10%;
+}
+
+button {
+  text-align: center;
+  background-color: rgb(63, 139, 223);
+  color: white;
+  border: none;
+  border-radius: 1rem;
+  font-size: 1.2rem;
+  width: 10%;
+  height: 10%;
+  padding: 1.4rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  padding-bottom: 2rem;
+}
+button:hover {
+  cursor: pointer;
+}
+.loading-time-sec {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.loading {
+  margin-top: 40rem;
+}
+.description{
+    width: 100%;
+    height: 10%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  
+    margin-top: 5%;
+    text-align: center; 
+}
+
+.liqudity-sec{
+  width: 100%;
+  height: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+  margin-top: 8rem;
+}
+
+input {
+  width: 20%;
+  height: 15%;
+  margin-top: 1rem;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  border: 1.5px solid wheat;
+}
+
+
+.addLiquidity-button {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  padding-bottom: 2rem;
+}
+
+.remove-liquidity-sec {
+  width: 100%;
+  height: 20%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20rem;
+  text-align: center;
+}
+
+.input-div {
+  margin-top: 1rem;
+}
+
+.removeLiquidity {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  padding-bottom: 2.4rem;
+}
+
+.swap-sec {
+  width: 100%;
+  height: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-top: 8rem;
+}
+
+.token-select {
+  width: 20%;
+  height: 5%;
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 1rem;
+}
+.swap-button {
+  margin-top: 2rem;
+}
+
+
+.App {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+  text-align: center;
+}
+
+.welcome {
+  margin-top: 3rem;
+}
+
+.DEX-description {
+  margin-top: 4rem;
+}
+
+.buttons {
+  margin-top: 5rem;
+}
+
+.liquidity-tab {
+  margin-top: 1rem;
+  margin-right: 1rem;
+  padding-top: 1.2rem;
+  padding-bottom: 2.4rem;
+}
+
+.swap-tab {
+  margin-top: 1rem;
+  margin-left: 1rem;
+  padding-top: 1.2rem;
+  padding-bottom: 2.4rem;
+}
+.logo-sec {
+  margin-top: 25rem;
+  
+}
+embed {
+  height: 100%;
+  width: 100%;
+}
+
+.addliq {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-top: 6rem;
+}
+
+.ZCD-needed {
+  margin-top: 1rem;
+}
+.addLiquidity-button {
+  margin-top: 2rem;
+}
