@@ -48,7 +48,7 @@ export const addLiquidity = async (
     // After the contract has the approval, add the ether and zcd tokens in the liquidity
    tx = await exchangeContract.addLiquidity(addZCDAmount, {
       value: addEtherAmountWei, 
-      gasLimit: 500000
+      gasLimit: 100000
     });
     await tx.wait();
   } catch (err) {
