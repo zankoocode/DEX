@@ -2,10 +2,6 @@
   width: 100%;
   height: 100%;
 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
 }
 
 
@@ -13,21 +9,29 @@ body {
   background-color: rgb(245, 241, 237);
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 .zankoocodeDEX {
-  margin-top: 10%;
- 
+  margin-top: 2rem;
+ height: 10%;
 }
 .connect-button {
   width: 15%;
-  margin-top: 10%;
+  
   height: 12%;
   padding: 2rem;
   padding-bottom: 3.4rem;
 }
-
+.image-div {
+  margin-top: 1rem;
+  width: 80%;
+  height: 50%;
+}
 footer {
-  margin-top: 40rem;
+  
   height: 10%;
 }
 
@@ -63,7 +67,7 @@ button:hover {
     flex-direction: column;
     align-items: center;
   
-    margin-top: 5%;
+    
     text-align: center; 
 }
 
