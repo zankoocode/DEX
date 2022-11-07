@@ -341,12 +341,14 @@ function App() {
               </h1>
         <button onClick={connectWallet} className="connect-button"> Connect Wallet </button>
       
-      
+      <div className="image-div" >
+        <img src="assets/exchange.png"/>
+        </div>
+        
+        made by @zankoocode
         </body>
 
-        <footer>
-          made by @zankoocode
-        </footer>
+        
       </div>
       
     )
