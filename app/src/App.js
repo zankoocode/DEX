@@ -316,7 +316,7 @@ function App() {
   // useEffects are used to react to changes in state of the website
   // The array at the end of function call represents what state changes will trigger this effect
   // In this case, whenever the value of `walletConnected` changes - this effect will be called
-  /*useEffect(() => {
+  useEffect(() => {
     // if wallet is not connected, create a new instance of Web3Modal and connect the MetaMask wallet
     if (!walletConnected) {
       // Assign the Web3Modal class to the reference object by setting it's `current` value
@@ -330,7 +330,7 @@ function App() {
       getAmounts();
     }
   }, [walletConnected]);
-*/
+
   if(!walletConnected){
     return (
       
@@ -342,9 +342,9 @@ function App() {
         <button onClick={connectWallet} className="connect-button"> Connect Wallet </button>
       
       <div className="image-div" >
-        <img src="assets/exchange.png"/>
+        <img src="https://ipfs.io/ipfs/QmPu2y3gdiB5agUkiBBL15TFBHTtKMy6wP4TNuALdcYhkm"/>
         </div>
-        
+
         made by @zankoocode
         </body>
 
@@ -559,17 +559,17 @@ function App() {
               >
                 Swap
               </button>
+
+              <div className="image-sec">
+                    <img src="https://ipfs.io/ipfs/QmPu2y3gdiB5agUkiBBL15TFBHTtKMy6wP4TNuALdcYhkm" />
+                </div>
             </div>
-                <span className="logo-sec">
-                    <svg xmlns="./0.svg" ></svg>
-                </span>
-          </div>
                 
+          </div>
+          Made by @zankoocode
         </div>
                 
-        <footer className="footer-sec">
-          Made by @zankoocode
-        </footer>
+        
       </div>
     );
   }
