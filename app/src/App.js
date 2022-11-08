@@ -195,6 +195,7 @@ function App() {
         setAddZCDTokens(zero);
         // Get amounts for all values after the liquidity has been added
         await getAmounts();
+        alert('you have successfully added liquidity');
       } else {
         setAddZCDTokens(zero);
       }
@@ -452,7 +453,7 @@ function App() {
                   {`You will need ${utils.formatEther(addZCDTokens)} zankoocode
                   Tokens`}
                 </div>
-                <button className="addLiquidity-button" onClick={_addLiquidity}>
+                <button className="addLiquidity-button2" onClick={_addLiquidity}>
                   Add
                 </button>
               </div>

@@ -59,9 +59,11 @@ button:hover {
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
+  height: 100%;
 }
 .loading {
-  margin-top: 40rem;
+  margin-top: 12rem;
 }
 .description{
     width: 100%;
@@ -183,12 +185,11 @@ input {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  
+  height: 30%;
+  margin-bottom: 2rem;
+  margin-top: 2rem;
 }
 
 .ZCD-needed {
   margin-top: 1rem;
-}
-.addLiquidity-button {
-  margin-top: 2rem;
 }
