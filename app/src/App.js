@@ -364,7 +364,7 @@ function App() {
 
   if (liquidityTab) {
     return (
-     <>
+     <div className="App">
       <div className="description">
         You have {utils.formatEther(zcdBalance)} zankoocode tokens 
         <br />
@@ -420,6 +420,7 @@ function App() {
                   Add
                 </button>
               </div>
+              
             ) : (
               <div className="addliq">
                 <input
@@ -486,7 +487,7 @@ function App() {
               </button>
             </div>
          
-     </>
+     </div>
     )
   } else if (swapTab) {
     return (
@@ -536,8 +537,7 @@ function App() {
   else {
     return (
       <div className="App">
-        <div>
-          <div>
+        
             <h1 className="welcome">Welcome to zankoocode Exchange!</h1>
             <div className="DEX-description">
               Exchange Ethereum &#60;&#62; zankoocode Tokens
@@ -559,15 +559,15 @@ function App() {
               >
                 Swap
               </button>
-
+                </div>
               <div className="image-sec">
                     <img src="https://ipfs.io/ipfs/QmPu2y3gdiB5agUkiBBL15TFBHTtKMy6wP4TNuALdcYhkm" />
                 </div>
-            </div>
+            
                 
-          </div>
+         
           Made by @zankoocode
-        </div>
+        
                 
         
       </div>
