@@ -3,8 +3,6 @@
   height: 100%;
 
 }
-
-
 body {
   background-color: rgb(245, 241, 237);
   width: 100%;
@@ -16,11 +14,10 @@ body {
 }
 .zankoocodeDEX {
   margin-top: 2rem;
- height: 10%;
+  height: 10%;
 }
 .connect-button {
   width: 15%;
-  
   height: 12%;
   padding: 2rem;
   padding-bottom: 3.4rem;
@@ -192,4 +189,93 @@ input {
 
 .ZCD-needed {
   margin-top: 1rem;
+}
+
+
+@media only screen and (max-width: 500px) {
+  .connect-button {
+    width: 30%;
+    height: 10%;
+    padding: 1rem;
+    padding-bottom: 3.4rem;
+    margin-top: 2rem;
+  }
+  .image-div {
+    
+    width: 33%;
+    height: 48%;
+
+    margin-bottom: 12rem;
+  }
+
+  .welcome {
+    font-size: 1.5rem;
+  }
+
+  .liquidity-tab {
+    width: 20%;
+    height: 10%;
+    padding: 1rem;
+    padding-bottom: 2rem;
+    margin-top: 2rem;
+  }
+
+  .swap-tab {
+    width: 20%;
+    height: 10%;
+    padding: 1rem;
+    padding-bottom: 2rem;
+    margin-top: 2rem;
+  }
+
+  .image-sec {
+    width: 33%;
+    height: 48%;
+
+    margin-bottom: 12rem;
+  }
+
+  .input-ether-amount {
+    width: 30%;
+  }
+  .input-zankoocode-amount {
+    width: 30%;
+  }
+  .lp-tokens-input {
+    width: 30%;
+  }
+  .addLiquidity-button2 {
+    width: 20%;
+    height: 10%;
+    padding: 1rem;
+    padding-bottom: 2rem;
+  }
+  .addLiquidity-button {
+    width: 20%;
+    height: 10%;
+    padding: 1rem;
+    padding-bottom: 2rem;
+  }
+  .removeLiquidity {
+    width: 20%;
+    height: 10%;
+    padding: 1rem;
+    padding-bottom: 2rem;
+  }
+  .swap-input {
+    width: 30%;
+  }
+  .swap-button {
+    width: 20%;
+    height: 10%;
+    padding: 1rem;
+    padding-bottom: 2rem;
+  }
+
+  .loading {
+    width: 20%;
+    height: 10%;
+    padding: 1rem;
+    padding-bottom: 2rem;
+  }
 }
