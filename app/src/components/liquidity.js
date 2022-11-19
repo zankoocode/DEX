@@ -1,17 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BigNumber, providers, utils } from "ethers";
-import {
-    getZCDTokensBalance,
-    getEtherBalance,
-    getLPTokensBalance,
-    getReserveOfZCDTokens,
-  } from "../utils/getAmounts";
+import { useSelector, useDispatch } from "react-redux";
+import { getProviderOrSigner } from "../utils/features/walletSlice";
+import { getAmounts, getEtherBalanceContract, selectEthBalance, selectEthBalanceContract, selectLPBalance, selectReservedZCD, selectZCDBalance } from "../utils/features/getAmountsSlice";
   import { addLiquidity, calculateZCD } from "../utils/addLiquidity";
   import {
     getTokensAfterRemove,
     removeLiquidity,
   } from "../utils/removeLiquidity";
-  import Web3Modal from "web3modal";
+
 
 
   
@@ -25,17 +22,14 @@ function LiquidityTab () {
  const zero = BigNumber.from(0);
 
 
-  /** Variables to keep track of amount */
-  // `ethBalance` keeps track of the amount of Eth held by the user's account
-  const [ethBalance, setEtherBalance] = useState(zero);
-  // `reservedZCD` keeps track of the Crypto Dev tokens Reserve balance in the Exchange contract
-  const [reservedZCD, setReservedZCD] = useState(zero);
-  // Keeps track of the ether balance in the contract
-  const [etherBalanceContract, setEtherBalanceContract] = useState(zero);
-  // zcdBalance is the amount of `ZCD` tokens help by the users account
-  const [zcdBalance, setZCDBalance] = useState(zero);
-  // `lpBalance` is the amount of LP tokens held by the users account
-  const [lpBalance, setLPBalance] = useState(zero);
+ const dispatch = useDispatch();
+  const zcdBalance = useSelector(selectZCDBalance);
+  const ethBalance = useSelector(selectEthBalance);
+  const lpBalance = useSelector(selectLPBalance);
+  const reservedZCD = useSelector(selectReservedZCD);
+  const etherBalanceContract = useSelector(selectEthBalanceContract);
+
+  
   /** Variables to keep track of liquidity to be added or removed */
   // addEther is the amount of Ether that the user wants to add to the liquidity
   const [addEther, setAddEther] = useState(zero);
@@ -56,110 +50,8 @@ function LiquidityTab () {
   const [colorBorderZCD, setColorBorderZCD] = useState("");
   const [colorBorderEth, setColorBorderEth] = useState("");
 
-  const web3ModalRef = useRef();
-  // walletConnected keep track of whether the user's wallet is connected or not
-  const [walletConnected, setWalletConnected] = useState(false);
-
-  /**
- * Returns a Provider or Signer object representing the Ethereum RPC with or
- * without the signing capabilities of Metamask attached
- *
- * A `Provider` is needed to interact with the blockchain - reading
- * transactions, reading balances, reading state, etc.
- *
- * A `Signer` is a special type of Provider used in case a `write` transaction
- * needs to be made to the blockchain, which involves the connected account
- * needing to make a digital signature to authorize the transaction being
- * sent. Metamask exposes a Signer API to allow your website to request
- * signatures from the user using Signer functions.
- *
- * @param {*} needSigner - True if you need the signer, default false
- * otherwise
- */
-  const getProviderOrSigner = async (needSigner = false) => {
-  // Connect to Metamask
-  // Since we store `web3Modal` as a reference, we need to access the `current` value to get access to the underlying object
-  const provider = await web3ModalRef.current.connect();
-  const web3Provider = new providers.Web3Provider(provider);
-
-  // If user is not connected to the Goerli network, let them know and throw an error
-  const { chainId } = await web3Provider.getNetwork();
-  if (chainId !== 5) {
-    window.alert("Change the network to Goerli");
-    throw new Error("Change network to Goerli");
-  }
-
-  if (needSigner) {
-    const signer = web3Provider.getSigner();
-    return signer;
-  }
-  return web3Provider;
-};
 
 
-// useEffects are used to react to changes in state of the website
-// The array at the end of function call represents what state changes will trigger this effect
-// In this case, whenever the value of `walletConnected` changes - this effect will be called
-useEffect(() => {
-  // if wallet is not connected, create a new instance of Web3Modal and connect the MetaMask wallet
-  if (!walletConnected) {
-    // Assign the Web3Modal class to the reference object by setting it's `current` value
-    // The `current` value is persisted throughout as long as this page is open
-    web3ModalRef.current = new Web3Modal({
-      network: "goerli",
-      providerOptions: {},
-      disableInjectedProvider: false,
-    });
-    connectWallet();
-    getAmounts();
-    
-  }
-}, [walletConnected]);
-
- /**
- * connectWallet: Connects the MetaMask wallet
- */
-  const connectWallet = async () => {
-      try {
-        // Get the provider from web3Modal, which in our case is MetaMask
-        // When used for the first time, it prompts the user to connect their wallet
-        await getProviderOrSigner();
-        setWalletConnected(true);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-      
-
-      /**
-   * getAmounts call various functions to retrive amounts for ethbalance,
-   * LP tokens etc
-   */
-  const getAmounts = async () => {
-    try {
-      const provider = await getProviderOrSigner(false);
-      const signer = await getProviderOrSigner(true);
-      const address = await signer.getAddress();
-      // get the amount of eth in the user's account
-      const _ethBalance = await getEtherBalance(provider, address);
-      // get the amount of `zankoocode` tokens held by the user
-      const _zcdBalance = await getZCDTokensBalance(provider, address);
-      // get the amount of `zankoocode` LP tokens held by the user
-      const _lpBalance = await getLPTokensBalance(provider, address);
-      // gets the amount of `ZCD` tokens that are present in the reserve of the `Exchange contract`
-      const _reservedZCD = await getReserveOfZCDTokens(provider);
-      // Get the ether reserves in the contract
-      const _ethBalanceContract = await getEtherBalance(provider, null, true);
-      setEtherBalance(_ethBalance);
-      setZCDBalance(_zcdBalance);
-      setLPBalance(_lpBalance);
-      setReservedZCD(_reservedZCD);
-      setReservedZCD(_reservedZCD);
-      setEtherBalanceContract(_ethBalanceContract);
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
 
   /**** ADD LIQUIDITY FUNCTIONS ****/
@@ -177,7 +69,7 @@ useEffect(() => {
       const addEtherWei = utils.parseEther(addEther.toString());
       // Check if the values are zero
       if (!addZCDTokens.eq(zero) && !addEtherWei.eq(zero)) {
-        const signer = await getProviderOrSigner(true);
+        const signer =  dispatch(getProviderOrSigner(true));
         setLoading(true);
         // call the addLiquidity function from the utils folder
         await addLiquidity(signer, addZCDTokens, addEtherWei);
@@ -185,7 +77,7 @@ useEffect(() => {
         // Reinitialize the ZCD tokens
         setAddZCDTokens(zero);
         // Get amounts for all values after the liquidity has been added
-        await getAmounts();
+         dispatch(getAmounts());
         alert('you have successfully added liquidity');
       } else {
         setAddZCDTokens(zero);
@@ -205,14 +97,14 @@ useEffect(() => {
    */
   const _removeLiquidity = async () => {
     try {
-      const signer = await getProviderOrSigner(true);
+      const signer = dispatch(getProviderOrSigner(true));
       // Convert the LP tokens entered by the user to a BigNumber
       const removeLPTokensWei = utils.parseEther(removeLPTokens);
       setLoading(true);
       // Call the removeLiquidity function from the `utils` folder
       await removeLiquidity(signer, removeLPTokensWei);
       setLoading(false);
-      await getAmounts();
+       dispatch(getAmounts());
       setRemoveZCD(zero);
       setRemoveEther(zero);
     } catch (err) {
@@ -230,13 +122,13 @@ useEffect(() => {
    */
   const _getTokensAfterRemove = async (_removeLPTokens) => {
     try {
-      const provider = await getProviderOrSigner();
+      const provider = dispatch(getProviderOrSigner());
       // Convert the LP tokens entered by the user to a BigNumber
       const removeLPTokenWei = utils.parseEther(_removeLPTokens);
       // Get the Eth reserves within the exchange contract
-      const _ethBalance = await getEtherBalance(provider, null, true);
+      const _ethBalance = dispatch(getEtherBalanceContract(provider));
       // get the crypto dev token reserves from the contract
-      const zankoocodeTokenReserve = await getReserveOfZCDTokens(provider);
+      const zankoocodeTokenReserve = dispatch((provider));
       // call the getTokensAfterRemove from the utils folder
       const { _removeEther, _removeZCD } = await getTokensAfterRemove(
         provider,
