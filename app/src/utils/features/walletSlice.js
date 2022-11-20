@@ -20,8 +20,13 @@ import Web3Modal from "web3modal";
 export const getProviderOrSigner = createAsyncThunk(
     'wallet/getProviderOrSigner',
     async (needSigner = false, thunkAPI) => {
+        const web3modal = new Web3Modal({
+            network: "goerli",
+            providerOptions: {},
+            disableInjectedProvider: false
+        });
 
-        const web3modal = selectWeb3Modal();
+        
         // Connect to Metamask
          // Since we store `web3Modal` as a state, we need to access the value to get access to the underlying object
     const provider = await web3modal.connect();
@@ -70,6 +75,9 @@ export const walletSlice = createSlice({
     extraReducers: {
         [getProviderOrSigner.fulfilled] : (state, action) => {
             state.web3ProviderOrSigner = action.payload;
+            state.walletConnected = true;
+            console.log(state.web3ProviderOrSigner);
+            console.log(state.walletConnected)
         },
         [getProviderOrSigner.rejected] : (state, action) => {
             state.web3ProviderOrSigner = null;
@@ -88,7 +96,7 @@ export const walletSlice = createSlice({
 
 
 
-const selectWeb3Modal = state => state.web3Modal;
+//const selectWeb3Modal = state => state.web3Modal;
 export const selectWalletConnected = state => state.walletConnected;
 export const selectWeb3ProviderOrSigner = state => state.web3ProviderOrSigner;
 export const selectWalletConnectFail = state => state.walletConnectFail;

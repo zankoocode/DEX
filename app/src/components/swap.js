@@ -2,6 +2,7 @@ import { BigNumber, providers, utils } from "ethers";
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
+//import './main.css'
 import { getAmounts,
          selectEthBalance,
         selectEthBalanceContract,
@@ -12,7 +13,7 @@ selectReservedZCD,
 getEtherBalanceAddress,
 getEtherBalanceContract} from "../utils/features/getAmountsSlice";
 
-import { getProviderOrSigner } from "../utils/features/walletSlice";
+import { getProviderOrSigner, selectWeb3ProviderOrSigner } from "../utils/features/walletSlice";
   import { swapTokens, getAmountOfTokensReceivedFromSwap } from "../utils/swap";
  
 
@@ -26,7 +27,9 @@ function SwapTab () {
 
   const reservedZCD = useSelector(selectReservedZCD);
 
+  const etherBalanceContract = useSelector(selectEthBalanceContract);
 
+  const web3ProviderOrSigner = useSelector(selectWeb3ProviderOrSigner);
   // This variable is the `0` number in form of a BigNumber
   const zero = BigNumber.from(0);
  
@@ -86,9 +89,9 @@ function SwapTab () {
       // Check if the user entered zero
       // We are here using the `eq` method from BigNumber class in `ethers.js`
       if (!_swapAmountWEI.eq(zero)) {
-        const provider = dispatch(getProviderOrSigner());
+        const provider = web3ProviderOrSigner;
         // Get the amount of ether in the contract
-        const _ethBalance = dispatch(getEtherBalanceContract(provider));
+        const _ethBalance = etherBalanceContract;
         // Call the `getAmountOfTokensReceivedFromSwap` from the utils folder
         const amountOfTokens = await getAmountOfTokensReceivedFromSwap(
           _swapAmountWEI,

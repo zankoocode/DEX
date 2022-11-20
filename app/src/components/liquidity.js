@@ -10,7 +10,7 @@ import { getAmounts, getEtherBalanceContract, selectEthBalance, selectEthBalance
   } from "../utils/removeLiquidity";
 
 
-
+//import './main.css'
   
 function LiquidityTab () {
 
@@ -69,7 +69,7 @@ function LiquidityTab () {
       const addEtherWei = utils.parseEther(addEther.toString());
       // Check if the values are zero
       if (!addZCDTokens.eq(zero) && !addEtherWei.eq(zero)) {
-        const signer =  dispatch(getProviderOrSigner(true));
+        const signer = dispatch(getProviderOrSigner(true));
         setLoading(true);
         // call the addLiquidity function from the utils folder
         await addLiquidity(signer, addZCDTokens, addEtherWei);
