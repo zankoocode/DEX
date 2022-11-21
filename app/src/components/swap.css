@@ -1,0 +1,59 @@
+
+.swap-sec {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.swap-input {
+    width: 20%;
+    padding: 1rem;
+    border-radius: 1rem;
+    border: 1px solid black;
+    margin-top: 5rem;
+}
+
+.token-select {
+    width: 10%;
+    padding: 0.8rem;
+    border-radius: 1rem;
+    border: 1px solid black;
+    margin-top: 1rem;
+}
+
+.swap-button {
+    margin-top: 1rem;
+    width: 10%;
+}
+
+.image-div {
+    margin-top: 5rem;
+    width: 20%;
+    height: 10%;
+    margin-bottom: 2rem;
+}
+
+
+@media only screen and (max-width: 600px){
+    .swap-input {
+        width: 35%;
+        
+    }
+    .token-select {
+        width: 25%;
+        
+    }
+    .swap-button {
+        width: 20%;
+    } 
+    .image-div {
+        margin-top: 5rem;
+        width: 30%;
+        height: 20%;
+        margin-bottom: 7rem;
+    }
+}
