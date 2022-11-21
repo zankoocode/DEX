@@ -3,8 +3,8 @@ zankoocode Decentralized exchange
 ## How to use?
 you can simply go to the following link and use the DEX on the Goerli network.
 // https://dex-tau-eosin.vercel.app
+<img width="1262" alt="Screenshot 2022-11-21 at 4 40 13 PM" src="https://user-images.githubusercontent.com/102598239/203063751-3308f719-27f2-40f2-b30b-fb42a62f324d.png">
 
-<img width="1272" alt="Screenshot 2022-11-15 at 11 37 16 PM" src="https://user-images.githubusercontent.com/102598239/202015462-7c7b6b7f-4b04-4d46-947e-163e68dfa030.png">
 
 ## How it works?
 the DEX is following the popular standard of Uniswap V1 which is ((x * y) = k).
