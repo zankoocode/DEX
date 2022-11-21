@@ -6,7 +6,7 @@
                 EXCHANGE_CONTRACT_ADDRESS,
                 TOKEN_CONTRACT_ABI,
                 TOKEN_CONTRACT_ADDRESS } from "../../constants/index";
-import { getProvider, getSigner } from "./walletSlice";
+
 
   const zero = BigNumber.from(0);
 
@@ -81,19 +81,6 @@ import { getProvider, getSigner } from "./walletSlice";
     }
   );
 
-  export const getAmounts = createAsyncThunk(
-    'getAmounts/getAmounts',
-    async() => {
-        const provider = getProvider()
-        const signer = getSigner()
-        const address = await signer.getAddress();
-         getEtherBalanceAddress({provider: provider, address: address});
-        getEtherBalanceContract(provider);
-        getZCDTokensBalance({provider: provider, address: address});
-        getLPTokensBalance({provider: provider, address: address});
-        getReserveOfZCDTokens(provider);
-    }
-  )
 
   const getAmountsSlice = createSlice({
     name: 'getAmounts',
@@ -136,16 +123,24 @@ import { getProvider, getSigner } from "./walletSlice";
         [getLPTokensBalance.rejected] : (state, action) => {
             state.lpBalance = zero;
             state.fetchBalances = "fetch LP balance failed";
+        },
+        [getReserveOfZCDTokens.fulfilled] : (state, action) => {
+          state.reservedZCD = action.payload;
+          
+        },
+        [getReserveOfZCDTokens.rejected] : (state, action) => {
+          state.reservedZCD = zero;
+          state.fetchBalances = "fetch ZCD reserve balance failed"
         }
     }
   });
 
 
-  export const selectEthBalance = state => state.ethBalance;
-  export const selectEthBalanceContract = state => state.etherBalanceContract;
-  export const selectZCDBalance = state => state.zcdBalance;
-  export const selectLPBalance = state => state.lpBalance;
-  export const selectReservedZCD = state => state.reservedZCD;
-  export const selectFetchBalances = state => state.fetchBalances;
+  export const selectEthBalance = state => state.getAmounts.ethBalance;
+  export const selectEthBalanceContract = state => state.getAmounts.etherBalanceContract;
+  export const selectZCDBalance = state => state.getAmounts.zcdBalance;
+  export const selectLPBalance = state => state.getAmounts.lpBalance;
+  export const selectReservedZCD = state => state.getAmounts.reservedZCD;
+  export const selectFetchBalances = state => state.getAmounts.fetchBalances;
 
   export default getAmountsSlice.reducer;

@@ -1,17 +1,11 @@
-import { BigNumber, providers, utils } from "ethers";
+import { BigNumber, utils } from "ethers";
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 
-import { getAmounts,
-         selectEthBalance,
+import { 
         selectEthBalanceContract,
-      selectFetchBalances,
-    selectLPBalance,
-  selectZCDBalance,
-selectReservedZCD, 
-getEtherBalanceAddress,
-getEtherBalanceContract} from "../utils/features/getAmountsSlice";
+selectReservedZCD, } from "../utils/features/getAmountsSlice";
 
 import { getProvider, getSigner, selectWeb3Provider, selectWeb3Signer } from "../utils/features/walletSlice";
   import { swapTokens, getAmountOfTokensReceivedFromSwap } from "../utils/swap";
@@ -58,8 +52,8 @@ function SwapTab () {
       // Check if the user entered zero
       // We are here using the `eq` method from BigNumber class in `ethers.js`
       if (!swapAmountWei.eq(zero)) {
-        await dispatch(getSigner())
-        console.log(web3Signer)
+        dispatch(getSigner())
+        console.log(web3Signer.getAddress())
         const signer = web3Signer;
         setLoading(true);
         // Call the swapTokens function from the `utils` folder
@@ -69,9 +63,10 @@ function SwapTab () {
           tokenToBeReceivedAfterSwap,
           ethSelected
         );
+        window.alert("token swap: successful");
         setLoading(false);
         // Get all the updated amounts after the swap
-         dispatch(getAmounts());
+        
         setSwapAmount("");
       }
     } catch (err) {
@@ -93,9 +88,10 @@ function SwapTab () {
      
       // We are here using the `eq` method from BigNumber class in `ethers.js`
       if (!_swapAmountWEI.eq(zero)) {
+        dispatch(getProvider())
         const provider = web3Provider;
         // Get the amount of ether in the contract
-        const _ethBalance = getEtherBalanceContract(provider);
+        const _ethBalance = etherBalanceContract;
         // Call the `getAmountOfTokensReceivedFromSwap` from the utils folder
         const amountOfTokens = await getAmountOfTokensReceivedFromSwap(
           _swapAmountWEI,

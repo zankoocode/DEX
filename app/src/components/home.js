@@ -1,17 +1,19 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useSelector, useDispatch} from "react-redux";
 
 import {  selectWalletConnected, 
-          selectWalletConnectFail,  
           getProvider,
           getSigner,
-          connectWallet,
-          web3Connect} from "../utils/features/walletSlice";
+          selectWeb3Signer} from "../utils/features/walletSlice";
 import {useHistory} from 'react-router-dom';
 
 
 import './home.css';
-import { getAmounts } from "../utils/features/getAmountsSlice";
+import {  getEtherBalanceAddress,
+           getEtherBalanceContract,
+            getLPTokensBalance, 
+             getReserveOfZCDTokens,
+              getZCDTokensBalance } from "../utils/features/getAmountsSlice";
 
 
 function Home () {
@@ -19,11 +21,9 @@ function Home () {
   const dispatch = useDispatch();
 
   const walletConnected = useSelector(selectWalletConnected);
-
-  const walletConnectFail = useSelector(selectWalletConnectFail);
-
   const history = useHistory();
-
+  const web3Provider = useSelector(state => state.wallet.web3Provider);
+  const web3Signer = useSelector(selectWeb3Signer);
   
 
     
@@ -36,15 +36,34 @@ function Home () {
         e.preventDefault();
         history.push('/liquidity')
     }
-    const walletConnect = () => {
-      // if wallet is not connected, create a new instance of Web3Modal and connect the MetaMask wallet
+
     
-      // Assign the Web3Modal class to the reference object by setting it's `current` value
-      // The `current` value is persisted throughout as long as this page is open
-     // dispatch(web3Connect());
-     // dispatch(connectWallet());
-      dispatch(getProvider());
-      dispatch(getAmounts());
+    const getAmounts = async () => {
+      try {
+        const provider = web3Provider;
+        const signer = web3Signer;
+        const address = signer.getAddress();
+        console.log(address)
+       // const address = await signer.getAddress();
+        dispatch(getEtherBalanceAddress({provider: provider, address: address}));
+        dispatch(getEtherBalanceContract(provider));
+        dispatch(getZCDTokensBalance({provider: provider, address: address}));
+        dispatch(getLPTokensBalance({provider: provider, address: address}));
+        dispatch(getReserveOfZCDTokens(provider));
+        
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    const walletConnect = async() => {
+      // get both provider and signer
+       dispatch(getProvider());
+       dispatch(getSigner());
+
+    }
+
+    if(walletConnected) {
+      getAmounts();
     }
     if(!walletConnected){
         return (
@@ -98,11 +117,10 @@ function Home () {
                     <img src="https://ipfs.io/ipfs/QmPu2y3gdiB5agUkiBBL15TFBHTtKMy6wP4TNuALdcYhkm" />
                 </div>
             
-                
+               
          
           Made by @zankoocode
-        
-                
+          
         
       </div>
       )

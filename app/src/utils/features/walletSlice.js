@@ -56,21 +56,13 @@ export const getSigner = createAsyncThunk(
     
 )
 
-export const connectWallet = createAsyncThunk(
-    'wallet/walletConnect',
-    async (arg, thunkAPI) => {
-         getProvider();
-    }
-)
-
 export const walletSlice = createSlice({
     name: 'wallet',
     initialState: {
         walletConnected: false,
-        web3Modal: null,
         web3Provider: null,
         web3Signer: null,
-        walletConnectFail: false
+        
     },
     reducers: {
         
@@ -78,22 +70,16 @@ export const walletSlice = createSlice({
     extraReducers: {
         [getProvider.fulfilled] : (state, action) => {
             state.web3Provider = action.payload;
+            state.walletConnected = true;
 
         },
         [getProvider.rejected] : (state, action) => {
             state.web3Provider = null;
                 console.log('error happened')
         },
-        [connectWallet.fulfilled] : (state, action) => {
-            state.walletConnectFail = false;
-            state.walletConnected = true;
-        },
-        [connectWallet.rejected] : (state, action) => {
-            state.walletConnectFail = true;
-            state.walletConnected = false;
-        },
         [getSigner.fulfilled] : (state, action) => {
             state.web3Signer = action.payload;
+            state.walletConnected = true;
         },
         [getSigner.rejected] : (state, action) => {
             state.web3Signer = null;
@@ -104,12 +90,13 @@ export const walletSlice = createSlice({
 
 
 
-//const selectWeb3Modal = state => state.web3Modal;
-export const selectWalletConnected = state => state.walletConnected;
-export const selectWeb3Provider = state => state.web3Provider;
-export const selectWeb3Signer = state => state.web3Signer;
-export const selectWalletConnectFail = state => state.walletConnectFail;
-export const { web3Connect } = walletSlice.actions;
+export const selectWalletConnected = state => state.wallet.walletConnected;
+
+export const selectWeb3Provider = state => state.wallet.web3Provider;
+
+export const selectWeb3Signer = state => state.wallet.web3Signer;
+
+
 
 
 

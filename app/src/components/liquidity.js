@@ -1,16 +1,18 @@
-import React, { useEffect, useState } from "react";
-import { BigNumber, providers, utils } from "ethers";
+import React, {useState } from "react";
+import { BigNumber, utils } from "ethers";
 import { useSelector, useDispatch } from "react-redux";
-import { getProvider, getSigner } from "../utils/features/walletSlice";
-import { getAmounts, getEtherBalanceContract, selectEthBalance, selectEthBalanceContract, selectLPBalance, selectReservedZCD, selectZCDBalance } from "../utils/features/getAmountsSlice";
+import { getProvider, getSigner, selectWeb3Provider, selectWeb3Signer } from "../utils/features/walletSlice";
+import {  selectEthBalance, selectEthBalanceContract, selectLPBalance, selectReservedZCD, selectZCDBalance } from "../utils/features/getAmountsSlice";
   import { addLiquidity, calculateZCD } from "../utils/addLiquidity";
   import {
     getTokensAfterRemove,
     removeLiquidity,
   } from "../utils/removeLiquidity";
+  import { getEtherBalanceAddress, getEtherBalanceContract ,getZCDTokensBalance, getLPTokensBalance, getReserveOfZCDTokens} from "../utils/features/getAmountsSlice";
 
 
-//import './main.css'
+import './liquidity.css'
+
   
 function LiquidityTab () {
 
@@ -20,8 +22,9 @@ function LiquidityTab () {
   const [loading, setLoading] = useState(false);
  // This variable is the `0` number in form of a BigNumber
  const zero = BigNumber.from(0);
-
-
+  const web3Signer = useSelector(selectWeb3Signer);
+  const web3Provider = useSelector(selectWeb3Provider);
+  
  const dispatch = useDispatch();
   const zcdBalance = useSelector(selectZCDBalance);
   const ethBalance = useSelector(selectEthBalance);
@@ -53,7 +56,25 @@ function LiquidityTab () {
 
 
 
-
+  const getAmounts = async () => {
+    try {
+      dispatch(getSigner());
+      dispatch(getProvider());
+      const provider = web3Provider;
+      const signer = web3Signer;
+      const address = signer.getAddress();
+      console.log(address)
+     // const address = await signer.getAddress();
+      dispatch(getEtherBalanceAddress({provider: provider, address: address}));
+      dispatch(getEtherBalanceContract(provider));
+      dispatch(getZCDTokensBalance({provider: provider, address: address}));
+      dispatch(getLPTokensBalance({provider: provider, address: address}));
+      dispatch(getReserveOfZCDTokens(provider));
+      
+    } catch (err) {
+      console.log(err);
+    }
+  }
   /**** ADD LIQUIDITY FUNCTIONS ****/
 
   /**
@@ -69,7 +90,8 @@ function LiquidityTab () {
       const addEtherWei = utils.parseEther(addEther.toString());
       // Check if the values are zero
       if (!addZCDTokens.eq(zero) && !addEtherWei.eq(zero)) {
-        const signer = dispatch(getSigner());
+        dispatch(getSigner());
+        const signer = web3Signer;
         setLoading(true);
         // call the addLiquidity function from the utils folder
         await addLiquidity(signer, addZCDTokens, addEtherWei);
@@ -77,8 +99,8 @@ function LiquidityTab () {
         // Reinitialize the ZCD tokens
         setAddZCDTokens(zero);
         // Get amounts for all values after the liquidity has been added
-         dispatch(getAmounts());
-        alert('you have successfully added liquidity');
+         getAmounts();
+        alert('add liquidity: successful');
       } else {
         setAddZCDTokens(zero);
       }
@@ -97,16 +119,19 @@ function LiquidityTab () {
    */
   const _removeLiquidity = async () => {
     try {
-      const signer = dispatch(getSigner());
+      dispatch(getSigner());
+      const signer = web3Signer;
       // Convert the LP tokens entered by the user to a BigNumber
       const removeLPTokensWei = utils.parseEther(removeLPTokens);
       setLoading(true);
       // Call the removeLiquidity function from the `utils` folder
       await removeLiquidity(signer, removeLPTokensWei);
       setLoading(false);
-       dispatch(getAmounts());
+       getAmounts();
+
       setRemoveZCD(zero);
       setRemoveEther(zero);
+      alert("remove liquidity: successful");
     } catch (err) {
       console.error(err);
       setLoading(false);
@@ -122,13 +147,14 @@ function LiquidityTab () {
    */
   const _getTokensAfterRemove = async (_removeLPTokens) => {
     try {
-      const provider = dispatch(getProvider());
+      dispatch(getProvider());
+      const provider = web3Provider;
       // Convert the LP tokens entered by the user to a BigNumber
       const removeLPTokenWei = utils.parseEther(_removeLPTokens);
       // Get the Eth reserves within the exchange contract
-      const _ethBalance = dispatch(getEtherBalanceContract(provider));
+      const _ethBalance =  etherBalanceContract;
       // get the crypto dev token reserves from the contract
-      const zankoocodeTokenReserve = dispatch((provider));
+      const zankoocodeTokenReserve = reservedZCD;
       // call the getTokensAfterRemove from the utils folder
       const { _removeEther, _removeZCD } = await getTokensAfterRemove(
         provider,
@@ -211,7 +237,7 @@ function LiquidityTab () {
                  </div>
                  
                ) : (
-                 <div className="addliq">
+                 <div className="addliq-sec">
                    <input
                      type="number"
                      placeholder="Amount of Ether"
@@ -266,12 +292,12 @@ function LiquidityTab () {
                    }}
                    className="lp-tokens-input"
                  />
-                 <div className="input-div">
+                 <div className="remove-div">
                    {/* Convert the BigNumber to string using the formatEther function from ethers.js */}
                    {`You will get ${utils.formatEther(removeZCD)} zankoocode
                   Tokens and ${utils.formatEther(removeEther)} Eth`}
                  </div>
-                 <button className="removeLiquidity" onClick={_removeLiquidity}>
+                 <button className="removeLiquidity-btn" onClick={_removeLiquidity}>
                    Remove
                  </button>
                </div>

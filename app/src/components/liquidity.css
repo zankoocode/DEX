@@ -1,0 +1,115 @@
+.App {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+.description {
+    height: 10%;
+    margin-top: 2rem;
+    line-height: 1.5rem;
+}
+
+.addliq-sec {
+    height: 30%;
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.ZCD-needed {
+    height: 10%;
+    margin-top: 1rem;
+}
+.addLiquidity-button2 {
+    margin-top: 1rem;
+    width: 10%;
+}
+.liqudity-sec {
+    height: 30%;
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.input-ether-amount {
+    height: 10%;
+}
+.input-zankoocode-amount {
+    height: 10%;
+    margin-top: 1rem;
+}
+.addLiquidity-button {
+    margin-top: 1rem;
+    width: 10%;
+}
+input {
+    width: 20%;
+    padding: 1rem;
+    border-radius: 1rem;
+    border: 1px solid black;
+    margin-top: 5rem;
+}
+
+.remove-liquidity-sec {
+    height: 30%;
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.lp-tokens-input {
+    height: 10%;
+   
+}
+
+.remove-div {
+    margin-top: 1rem;
+}
+
+.removeLiquidity-btn {
+    margin-top: 1rem;
+    width: 10%;
+}
+.loading-time-sec {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+.loading {
+    margin-top: 20rem;
+    width: 10%;
+}
+
+@media only screen and (max-width: 600px) {
+    input {
+        width: 40%;
+    }
+    .addLiquidity-button {
+        
+        width: 20%;
+    }
+    .addLiquidity-button2 {
+        
+        width: 20%;
+    }
+    .removeLiquidity-btn {
+       
+        width: 20%;
+    }
+    .loading {
+        width: 20%;
+    }
+}
