@@ -1,32 +1,26 @@
-import React from "react";
-import { useSelector, useDispatch} from "react-redux";
+import React, { useState } from "react";
 
-import {  selectWalletConnected, 
-          getProvider,
-          getSigner,
-          selectWeb3Signer} from "../utils/features/walletSlice";
+
+
 import {useHistory} from 'react-router-dom';
-
+import { useAccount } from 'wagmi'
 
 import './home.css';
-import {  getEtherBalanceAddress,
-           getEtherBalanceContract,
-            getLPTokensBalance, 
-             getReserveOfZCDTokens,
-              getZCDTokensBalance } from "../utils/features/getAmountsSlice";
 
+import { Web3Button } from "@web3modal/react";
 
 function Home () {
 
-  const dispatch = useDispatch();
 
-  const walletConnected = useSelector(selectWalletConnected);
+  const [walletConnected, setWalletConnected] = useState(false);
+    const account = useAccount({
+      onConnect(){
+        setWalletConnected(true);
+      }
+    })
   const history = useHistory();
-  const web3Provider = useSelector(state => state.wallet.web3Provider);
-  const web3Signer = useSelector(selectWeb3Signer);
   
-
-    
+  
   
     const goToSwapTab = (e) => {
         e.preventDefault();
@@ -36,35 +30,11 @@ function Home () {
         e.preventDefault();
         history.push('/liquidity')
     }
-
     
-    const getAmounts = async () => {
-      try {
-        const provider = web3Provider;
-        const signer = web3Signer;
-        const address = signer.getAddress();
-        console.log(address)
-       // const address = await signer.getAddress();
-        dispatch(getEtherBalanceAddress({provider: provider, address: address}));
-        dispatch(getEtherBalanceContract(provider));
-        dispatch(getZCDTokensBalance({provider: provider, address: address}));
-        dispatch(getLPTokensBalance({provider: provider, address: address}));
-        dispatch(getReserveOfZCDTokens(provider));
-        
-      } catch (err) {
-        console.log(err);
-      }
-    }
-    const walletConnect = async() => {
-      // get both provider and signer
-       dispatch(getProvider());
-       dispatch(getSigner());
-
-    }
-
-    if(walletConnected) {
-      getAmounts();
-    }
+    
+    
+    
+  
     if(!walletConnected){
         return (
           
@@ -73,8 +43,9 @@ function Home () {
                  <h1 className="zankoocodeDEX">
                       zankoocode DEX
                   </h1>
-                  <button className="walletConnect-btn" onClick={walletConnect} > Connect Wallet</button>
-            
+                  <div className="connect-btn-div">
+                 <Web3Button />
+                 </div>
           <div className="image-div" >
             <img src="https://ipfs.io/ipfs/QmPu2y3gdiB5agUkiBBL15TFBHTtKMy6wP4TNuALdcYhkm"/>
             </div>

@@ -12,6 +12,13 @@ import {  selectEthBalance, selectEthBalanceContract, selectLPBalance, selectRes
 
 
 import './liquidity.css'
+import { useBalance, useContractRead, useAccount, useSigner, useProvider, useContractWrite } from "wagmi";
+
+import {TOKEN_CONTRACT_ABI,
+         TOKEN_CONTRACT_ADDRESS,
+           EXCHANGE_CONTRACT_ABI,
+            EXCHANGE_CONTRACT_ADDRESS} from '../constants/index';
+import { providers } from 'ethers';
 
   
 function LiquidityTab () {
@@ -22,17 +29,11 @@ function LiquidityTab () {
   const [loading, setLoading] = useState(false);
  // This variable is the `0` number in form of a BigNumber
  const zero = BigNumber.from(0);
-  const web3Signer = useSelector(selectWeb3Signer);
-  const web3Provider = useSelector(selectWeb3Provider);
-  
- const dispatch = useDispatch();
-  const zcdBalance = useSelector(selectZCDBalance);
-  const ethBalance = useSelector(selectEthBalance);
-  const lpBalance = useSelector(selectLPBalance);
-  const reservedZCD = useSelector(selectReservedZCD);
-  const etherBalanceContract = useSelector(selectEthBalanceContract);
+  const web3Signer = useProvider();
+  const web3Provider = useSigner();
 
-  
+
+  const account = useAccount();
   /** Variables to keep track of liquidity to be added or removed */
   // addEther is the amount of Ether that the user wants to add to the liquidity
   const [addEther, setAddEther] = useState(zero);
@@ -53,28 +54,77 @@ function LiquidityTab () {
   const [colorBorderZCD, setColorBorderZCD] = useState("");
   const [colorBorderEth, setColorBorderEth] = useState("");
 
+  const [etherBalanceContract, setEtherBalanceContract] = useState();
+  const [etherBalanceUser, setEtherBalanceUser] = useState();
+  const [tokenBalanceUser, setTokenBalanceUser] = useState();
+  const [lpBalanceUser, setLPBalanceUser] = useState();
+  const [reservedZCD, setReservedZCD] = useState();
 
 
+  const [addZCDAmount, setAddZCDAmount] = useState();
 
+  const getEtherBlanceUser = async (provider, address) => {
+    try {
+      const balance = provider.getBalance(address);
+      setEtherBalanceUser(balance);
+    } catch (error) {
+      console.log(error);
+    }
+  } 
+
+  const getEtherBalanceContract = async (provider) => {
+    try {
+      const balance = provider.getBalance(EXCHANGE_CONTRACT_ADDRESS);
+      setEtherBalanceContract(balance);
+    } catch (error) {
+      console.log(error);
+    }
+  } 
+
+  const tokenContractRead = useContractRead({
+    address: TOKEN_CONTRACT_ADDRESS,
+    abi: TOKEN_CONTRACT_ABI,
+    functionName: 'balanceOf',
+    args: [account.address],
+    onSuccess(data){
+      setTokenBalanceUser(data);
+    }
+  });
+
+  const LPexchangeContractRead = useContractRead({
+    address: EXCHANGE_CONTRACT_ADDRESS,
+    abi: EXCHANGE_CONTRACT_ABI,
+    functionName: 'balanceOf',
+    args: [account.address],
+    onSuccess(data){
+      setLPBalanceUser(data)
+    }
+  });
+
+  const reserveZCDexchange = useContractRead({
+    address: EXCHANGE_CONTRACT_ADDRESS,
+    abi: EXCHANGE_CONTRACT_ABI,
+    functionName: 'getReserve',
+    onSuccess(data) {
+      setReservedZCD(data)
+    }
+  });
+
+
+  
   const getAmounts = async () => {
     try {
-      dispatch(getSigner());
-      dispatch(getProvider());
-      const provider = web3Provider;
-      const signer = web3Signer;
-      const address = signer.getAddress();
-      console.log(address)
-     // const address = await signer.getAddress();
-      dispatch(getEtherBalanceAddress({provider: provider, address: address}));
-      dispatch(getEtherBalanceContract(provider));
-      dispatch(getZCDTokensBalance({provider: provider, address: address}));
-      dispatch(getLPTokensBalance({provider: provider, address: address}));
-      dispatch(getReserveOfZCDTokens(provider));
+      reserveZCDexchange();
+      LPexchangeContractRead();
+      tokenContractRead();
+      getEtherBalanceContract();
+      getEtherBlanceUser()
       
     } catch (err) {
       console.log(err);
     }
   }
+
   /**** ADD LIQUIDITY FUNCTIONS ****/
 
   /**
@@ -84,17 +134,31 @@ function LiquidityTab () {
    * then we calculate the crypto dev tokens he can add, given the Eth he wants to add by keeping the ratios
    * constant
    */
+
+    const approveToken = useContractWrite({
+        address: TOKEN_CONTRACT_ADDRESS,
+        abi: TOKEN_CONTRACT_ABI,
+        functionName: 'approve',
+        args: [EXCHANGE_CONTRACT_ADDRESS, BigNumber.from(utils.parseEther(addZCDAmount.toString()))]
+    });
+    const addLiquidity = useContractWrite({
+      address: EXCHANGE_CONTRACT_ADDRESS,
+      abi: EXCHANGE_CONTRACT_ABI,
+      functionName: 'addLiquidity',
+      args: [addZCDTokens]
+    });
+    const addEtherWei = utils.parseEther(addEther.toString());
    const _addLiquidity = async () => {
     try {
       // Convert the ether amount entered by the user to Bignumber
       const addEtherWei = utils.parseEther(addEther.toString());
       // Check if the values are zero
       if (!addZCDTokens.eq(zero) && !addEtherWei.eq(zero)) {
-        dispatch(getSigner());
-        const signer = web3Signer;
+        
         setLoading(true);
         // call the addLiquidity function from the utils folder
-        await addLiquidity(signer, addZCDTokens, addEtherWei);
+        await approveToken();
+
         setLoading(false);
         // Reinitialize the ZCD tokens
         setAddZCDTokens(zero);
