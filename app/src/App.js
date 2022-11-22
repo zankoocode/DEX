@@ -57,7 +57,7 @@ function App() {
 
       <Web3Modal
         projectId="50c99053675ee3d2d6d7e508938bb227"
-        theme="dark"
+        theme="light"
         accentColor="default"
         ethereumClient={ethereumClient}
       />
