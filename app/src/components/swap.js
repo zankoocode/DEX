@@ -1,21 +1,23 @@
 import { BigNumber, utils } from "ethers";
 import React, { useState } from "react";
 import { useAccount, useBalance, useContractRead, useContractWrite } from "wagmi";
-import { EXCHANGE_CONTRACT_ABI, EXCHANGE_CONTRACT_ADDRESS, TOKEN_CONTRACT_ABI, TOKEN_CONTRACT_ADDRESS } from "../constants";
+import { EXCHANGE_CONTRACT_ABI,
+         EXCHANGE_CONTRACT_ADDRESS, 
+         TOKEN_CONTRACT_ABI,
+          TOKEN_CONTRACT_ADDRESS } from "../constants";
 
 
 
 
- import { swapTokens, getAmountOfTokensReceivedFromSwap } from "../utils/swap";
+
  import './swap.css';
 
 function SwapTab () {
 
   const zero = BigNumber.from(0);
+
       /** General state variables */
-  // loading is set to true when the transaction is mining and set to false when
-  // the transaction has mined
-  const [loading, setLoading] = useState(false);
+  
 
   const [reservedZCD, setReservedZCD] = useState(zero);
 
@@ -23,33 +25,34 @@ function SwapTab () {
 
   const [etherBalanceUser, setEtherBalanceUser] = useState(zero);
 
-  const [approveTokenAmount, setApproveTokenAmount] = useState(zero);
+ 
   const [ swapAmountWei, setSwapAmountWei] = useState(zero);
   // This variable is the `0` number in form of a BigNumber
  
  
-  /** Variables to keep track of swap functionality */
-  // Amount that the user wants to swap
-  const [swapAmount, setSwapAmount] = useState("");
+  
   // This keeps track of the number of tokens that the user would receive after a swap completes
   const [tokenToBeReceivedAfterSwap, settokenToBeReceivedAfterSwap] =
     useState(zero);
+
   // Keeps track of whether  `Eth` or `zankoocode` token is selected. If `Eth` is selected it means that the user
   // wants to swap some `Eth` for some `zankoocode` tokens and vice versa if `Eth` is not selected
   const [ethSelected, setEthSelected] = useState(true);
 
 
+  // the account of the user
   const account = useAccount();
  
- 
+  // getEtherBalanceUser will get the amount of ether of the user
   const getEtherBalanceUser = useBalance({
     address: account.address,
     onSuccess(data) {
-      console.log(data)
+      
       setEtherBalanceUser(data)
     }
   })
-  
+
+  // reserveZCDexchange will get the reserve amount of ZCD in the contract
   const reserveZCDexchange = useContractRead({
     address: EXCHANGE_CONTRACT_ADDRESS,
     abi: EXCHANGE_CONTRACT_ABI,
@@ -59,12 +62,16 @@ function SwapTab () {
     }
   });
 
+  // getEtherBalanceContract will get the ether balance of the contract
     const getEtherBalanceContract = useBalance({
       address: EXCHANGE_CONTRACT_ADDRESS,
       onSuccess(data){
         setEtherBalanceContract(data)
       }
     })
+
+
+    // getAmountsAfterSwapEther will call a function in the contract that calculate the amount of token after swap
   const {refetch: getAmountsAfterSwapEther} = useContractRead({
       address: EXCHANGE_CONTRACT_ADDRESS,
       abi: EXCHANGE_CONTRACT_ABI,
@@ -77,6 +84,7 @@ function SwapTab () {
       enabled: false
   });
 
+  // getAmountsAfterSwapZCD will call a function in the contract that calculate the amount of token after swap
   const {refetch: getAmountsAfterSwapZCD} = useContractRead({
     address: EXCHANGE_CONTRACT_ADDRESS,
     abi: EXCHANGE_CONTRACT_ABI,
@@ -88,6 +96,7 @@ function SwapTab () {
     enabled: false
   })
 
+  // for swapping ZCD the amount of token first should be approved which approveToken function does it
   const {write: approveToken, isSuccess: isSuccessApproveToken} = useContractWrite({
     address: TOKEN_CONTRACT_ADDRESS,
     abi: TOKEN_CONTRACT_ABI,
@@ -95,6 +104,7 @@ function SwapTab () {
     args: [EXCHANGE_CONTRACT_ADDRESS, swapAmountWei]
   })
 
+  // after approvde token swapZankoocodeTokenToEth will be invoked with swap ZCD into Eth
  const { write: swapZankoocodeTokenToEth, isLoading: isLoadingSwapZankoocodeTokenToEth} = useContractWrite({
   address: EXCHANGE_CONTRACT_ADDRESS,
   abi: EXCHANGE_CONTRACT_ABI,
@@ -104,6 +114,8 @@ function SwapTab () {
     gasLimit: 80000
   }
  })
+
+ // swapEthTozankoocodeToken function will swap eth (in wei) into ZCD token
   const {write: swapEthTozankoocodeToken, isLoading: isLoadingSwapEthTozankoocodeToken} = useContractWrite({
     address: EXCHANGE_CONTRACT_ADDRESS,
     abi: EXCHANGE_CONTRACT_ABI,
@@ -119,7 +131,7 @@ function SwapTab () {
 
   })
   
-  /*** END ***/
+  
 
 
   if (isLoadingSwapEthTozankoocodeToken || isLoadingSwapZankoocodeTokenToEth) {
@@ -161,8 +173,7 @@ function SwapTab () {
         onChange={async () => {
           setEthSelected(!ethSelected);
           // Initialize the values back to zero
-          //setApproveTokenAmount(BigNumber.from(utils.parseEther( swapAmountWei.toString())));
-        
+          
           setSwapAmountWei("");
         }}
       >
@@ -171,7 +182,7 @@ function SwapTab () {
       </select>
       <br />
       <div className="input-div">
-        {/* Convert the BigNumber to string using the formatEther function from ethers.js */}
+     
         {ethSelected
           ? 
           <div className="swap-sec">
