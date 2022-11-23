@@ -26,7 +26,7 @@
     height: 10%;
     margin-top: 1rem;
 }
-.addLiquidity-button2 {
+.addLiquidity-approve-btn {
     margin-top: 1rem;
     width: 10%;
 }
@@ -45,15 +45,12 @@
     height: 10%;
     margin-top: 1rem;
 }
-.addLiquidity-button {
-    margin-top: 1rem;
-    width: 10%;
-}
+
 input {
     width: 20%;
     padding: 1rem;
     border-radius: 1rem;
-    border: 1px solid black;
+    border: 1px solid rgba(95, 159, 248, 0.5);
     margin-top: 5rem;
 }
 
@@ -92,24 +89,34 @@ input {
     margin-top: 20rem;
     width: 10%;
 }
-
+.tx-num {
+    width: 5%;
+    padding: 1rem;
+    border-radius: 1rem;
+    background-color:  rgba(95, 159, 248, 0.5);
+    margin-top: 0.5rem;
+}
 @media only screen and (max-width: 600px) {
     input {
         width: 40%;
     }
     .addLiquidity-button {
         
-        width: 20%;
+        width: 25%;
     }
-    .addLiquidity-button2 {
+    .addLiquidity-approve-btn {
         
-        width: 20%;
+        width: 25%;
     }
     .removeLiquidity-btn {
        
-        width: 20%;
+        width: 25%;
     }
     .loading {
-        width: 20%;
+        width: 25%;
+    }
+    .tx-num {
+        width: 15%;
+
     }
 }

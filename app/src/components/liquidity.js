@@ -49,9 +49,7 @@ function LiquidityTab () {
   const [tokenBalanceUser, setTokenBalanceUser] = useState(zero);
   const [lpBalanceUser, setLPBalanceUser] = useState(zero);
   const [reservedZCD, setReservedZCD] = useState(zero);
-  const [removeLPTokensAmount, setRemoveLPTokensAmount] = useState();
 
-  const [addZCDAmount, setAddZCDAmount] = useState(zero);
   const [_addZCDAmount, _setAddZCDAmount] = useState(zero);
   const [_addEtherWei, _setAddEtherWei ] = useState(zero);
 
@@ -109,22 +107,17 @@ function LiquidityTab () {
   /**** ADD LIQUIDITY FUNCTIONS ****/
 
   /**
-   * _addLiquidity helps add liquidity to the exchange,
-   * If the user is adding initial liquidity, user decides the ether and ZCD tokens he wants to add
-   * to the exchange. If he is adding the liquidity after the initial liquidity has already been added
-   * then we calculate the crypto dev tokens he can add, given the Eth he wants to add by keeping the ratios
-   * constant
+   
    */
 
-    const approveToken = useContractWrite({
+    const { write: approveToken, isSuccess: isSuccessApprove} = useContractWrite({
         address: TOKEN_CONTRACT_ADDRESS,
         abi: TOKEN_CONTRACT_ABI,
         functionName: 'approve',
         args: [EXCHANGE_CONTRACT_ADDRESS, _addZCDAmount]
     });
-   //_setAddZCDAmount(BigNumber.from(utils.parseEther(addZCDTokens.toString())))
-
-    const addLiquidity = useContractWrite({
+   
+    const {write: addLiquidity, isLoading: isLoadingAddLiquidity} = useContractWrite({
       address: EXCHANGE_CONTRACT_ADDRESS,
       abi: EXCHANGE_CONTRACT_ABI,
       functionName: 'addLiquidity',
@@ -134,84 +127,31 @@ function LiquidityTab () {
         value: _addEtherWei,
       },
     });
-   //_setAddEtherWei(utils.parseEther(addEther.toString()));
-
-   const _addLiquidity = async () => {
-    try {
-      // Convert the ether amount entered by the user to Bignumber
-      const addEtherWei = utils.parseEther(addEther.toString());
-      // Check if the values are zero
-      if (!addZCDTokens.eq(zero) && !addEtherWei.eq(zero)) {
-        
-        setLoading(true);
-        // call the addLiquidity function from the utils folder
-        await approveToken();
-
-        await addLiquidity();
-
-        setLoading(false);
-        // Reinitialize the ZCD tokens
-        setAddZCDTokens(zero);
-        // Get amounts for all values after the liquidity has been added
-         
-        alert('add liquidity: successful');
-      } else {
-        setAddZCDTokens(zero);
-      }
-    } catch (err) {
-      console.error(err);
-      setLoading(false);
-      setAddZCDTokens(zero);
-    }
-  };
+   
+  
 
 
-
-  const config = usePrepareContractWrite({
-    
-    address: EXCHANGE_CONTRACT_ADDRESS,
-    abi: EXCHANGE_CONTRACT_ABI,
-    functionName: 'removeLiquidity',
-    args: [_removeLPTokensWei],
-    overrides: {
-      gasLimit: 100000,
-      
-    },
-    
-    
-  })
-
-  const {removeLiquidity ,data, write} = useContractWrite(config)
- //_setRemoveLPTokensWei(utils.parseEther(removeLPTokensAmount));
   /**** REMOVE LIQUIDITY FUNCTIONS ****/
 
   /**
    * _removeLiquidity: Removes the `removeLPTokensWei` amount of LP tokens from
    * liquidity and also the calculated amount of `ether` and `ZCD` tokens
    */
-
-
-  const _removeLiquidity = async () => {
-    try {
+  const { write: removeLiquidity, 
+          isLoading: isLoadingRemoveLiquidity} = useContractWrite({
+    address: EXCHANGE_CONTRACT_ADDRESS,
+    abi: EXCHANGE_CONTRACT_ABI,
+    functionName: 'removeLiquidity',
+    args: [_removeLPTokensWei],
+    overrides: {
+      gasLimit: 80000,
       
-      // Convert the LP tokens entered by the user to a BigNumber
-      
-      setLoading(true);
-      // Call the removeLiquidity function from the `utils` folder
-      await write();
-      setLoading(false);
-     
+    },
+    
+    
+  })
 
-      setRemoveZCDAmount(zero);
-      setRemoveEtherAmount(zero);
-      alert("remove liquidity: successful");
-    } catch (err) {
-      console.error(err);
-      setLoading(false);
-      setRemoveZCDAmount(zero);
-      setRemoveEtherAmount(zero);
-    }
-  };
+
 
 
   const getTokensAfterRemove = async (_removeLPTokensWei) => {
@@ -243,13 +183,13 @@ function LiquidityTab () {
   
 
 
-    if (loading) {
+    if (isLoadingRemoveLiquidity || isLoadingAddLiquidity) {
         return (
           <div className="loading-time-sec">
         <button className="loading">Waiting...</button>
         </div>
         )
-      }
+      } 
     
     return (
         <div className="App">
@@ -300,16 +240,29 @@ function LiquidityTab () {
                            setAddZCDTokens(
                              BigNumber.from(utils.parseEther(e.target.value || "0"))
                            )
-                           setAddZCDAmount(BigNumber.from(utils.parseEther(e.target.value || "0")))
                          }
                        }
                        
                      }
                      className="input-zankoocode-amount"
                    />
-                   <button className="addLiquidity-button" onClick={_addLiquidity}>
-                     Add
-                   </button>
+                   {
+                    isSuccessApprove ? <><button className="addLiquidity-approve-btn" onClick={addLiquidity}>
+                    Add
+                   </button>  <span className="tx-num">
+                    2/2
+                   </span>
+                   </>
+                   :
+                    <><button className="addLiquidity-approve-btn" onClick={approveToken}>
+                    Approve
+                  </button>
+                  <span className="tx-num">
+                    1/2
+                  </span>
+                  </>
+                   }
+                   
                  </div>
                  
                ) : (
@@ -343,9 +296,23 @@ function LiquidityTab () {
                      {`You will need ${utils.formatEther(addZCDTokens)} zankoocode
                      Tokens`}
                    </div>
-                   <button className="addLiquidity-button2" onClick={_addLiquidity}>
-                     Add
-                   </button>
+                   {
+                    isSuccessApprove ? <><button className="addLiquidity-approve-btn" onClick={addLiquidity}>
+                    Add
+                   </button>  <span className="tx-num">
+                    2/2
+                   </span>
+                   </>
+                   :
+                    <><button className="addLiquidity-approve-btn" onClick={approveToken}>
+                    Approve
+                  </button>
+                  <span className="tx-num">
+                    1/2
+                  </span>
+                  </>
+                   }
+                   
                  </div>
                )}
                  <div className="remove-liquidity-sec">
@@ -376,7 +343,7 @@ function LiquidityTab () {
                    {`You will get ${utils.formatEther(removeZCDAmount)} zankoocode
                   Tokens and ${utils.formatEther(removeEtherAmount)} Eth`}
                  </div>
-                 <button className="removeLiquidity-btn" onClick={write}>
+                 <button className="removeLiquidity-btn" onClick={removeLiquidity}>
                    Remove
                  </button>
                </div>
