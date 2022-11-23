@@ -114,7 +114,7 @@ function LiquidityTab () {
         address: TOKEN_CONTRACT_ADDRESS,
         abi: TOKEN_CONTRACT_ABI,
         functionName: 'approve',
-        args: [EXCHANGE_CONTRACT_ADDRESS, _addZCDAmount]
+        args: [EXCHANGE_CONTRACT_ADDRESS, addZCDTokens]
     });
    
     const {write: addLiquidity, isLoading: isLoadingAddLiquidity} = useContractWrite({
@@ -278,6 +278,7 @@ function LiquidityTab () {
                          } else {
                            setColorBorderEth("1.5px solid green");
                        setAddEther(e.target.value || "0");
+                       _setAddEtherWei(utils.parseEther(e.target.value))
                        // calculate the number of ZCD tokens that
                        // can be added given  `e.target.value` amount of Eth
                        const _addZCDTokens = await calculateZCD(
@@ -285,6 +286,7 @@ function LiquidityTab () {
                          etherBalanceContract.value,
                          reservedZCD
                        );
+                       
                        setAddZCDTokens(_addZCDTokens);
                        }
                      }
