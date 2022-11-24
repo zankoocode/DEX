@@ -113,7 +113,8 @@ function LiquidityTab () {
         address: TOKEN_CONTRACT_ADDRESS,
         abi: TOKEN_CONTRACT_ABI,
         functionName: 'approve',
-        args: [EXCHANGE_CONTRACT_ADDRESS, addZCDTokens]
+        args: [EXCHANGE_CONTRACT_ADDRESS, addZCDTokens],
+       
     });
    
     // after approving token addLiquidity function will be invoked and the liquidity will be added
@@ -126,6 +127,9 @@ function LiquidityTab () {
         from: account.address,
         value: _addEtherWei,
       },
+      onSettled(){
+        alert('add liquidity was successful')
+      }
     });
    
   
@@ -142,7 +146,9 @@ function LiquidityTab () {
       gasLimit: 80000,
       
     },
-    
+    onSettled(){
+      alert('remove liquidity was successful')
+    }
     
   })
 

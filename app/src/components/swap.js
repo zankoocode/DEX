@@ -112,6 +112,9 @@ function SwapTab () {
   args: [swapAmountWei, tokenToBeReceivedAfterSwap],
   overrides: {
     gasLimit: 80000
+  },
+  onSettled(){
+    alert('swap was successful')
   }
  })
 

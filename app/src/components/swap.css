@@ -27,7 +27,8 @@
 
 .swap-button {
     margin-top: 1rem;
-    width: 20%;
+    min-width: 20%;
+    max-width: 30%;
 }
 .swap-button-sec {
     margin-top: 1rem;
