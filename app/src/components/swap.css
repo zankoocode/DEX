@@ -13,30 +13,50 @@
     width: 20%;
     padding: 1rem;
     border-radius: 1rem;
-    border: 1px solid black;
-    margin-top: 5rem;
+    border: 1px solid rgba(95, 159, 248, 0.5);
+    margin-top: 2rem;
 }
 
 .token-select {
     width: 10%;
     padding: 0.8rem;
     border-radius: 1rem;
-    border: 1px solid black;
+    border: 1px solid rgba(95, 159, 248, 0.5);
     margin-top: 1rem;
 }
 
 .swap-button {
     margin-top: 1rem;
-    width: 10%;
+    width: 20%;
+}
+.swap-button-sec {
+    margin-top: 1rem;
+    width: 40%;
+}
+.approve-button {
+    margin-top: 1rem;
 }
 
 .image-div {
-    margin-top: 5rem;
+    margin-top: 2rem;
     width: 20%;
     height: 10%;
     margin-bottom: 2rem;
 }
-
+p {
+    line-height: 1.5rem;
+}
+.tx-num2 {
+    min-width: 20%;
+   
+    padding: 1rem;
+    border-radius: 1rem;
+    background-color:  rgba(95, 159, 248, 0.5);
+    margin-top: 0.5rem;
+}
+button:disabled{
+   background-color: rgba(95, 159, 248, 0.5);
+}
 
 @media only screen and (max-width: 600px){
     .swap-input {
@@ -55,5 +75,9 @@
         width: 30%;
         height: 20%;
         margin-bottom: 7rem;
+    }
+    .swap-button {
+        margin-top: 1rem;
+        width: 30%;
     }
 }

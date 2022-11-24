@@ -1,118 +1,140 @@
 import { BigNumber, utils } from "ethers";
 import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useAccount, useBalance, useContractRead, useContractWrite } from "wagmi";
+import { EXCHANGE_CONTRACT_ABI,
+         EXCHANGE_CONTRACT_ADDRESS, 
+         TOKEN_CONTRACT_ABI,
+          TOKEN_CONTRACT_ADDRESS } from "../constants";
 
 
-import { 
-        selectEthBalanceContract,
-selectReservedZCD, } from "../utils/features/getAmountsSlice";
 
-import { getProvider, getSigner, selectWeb3Provider, selectWeb3Signer } from "../utils/features/walletSlice";
-  import { swapTokens, getAmountOfTokensReceivedFromSwap } from "../utils/swap";
+
+
  import './swap.css';
 
 function SwapTab () {
 
-    const dispatch = useDispatch();
-      /** General state variables */
-  // loading is set to true when the transaction is mining and set to false when
-  // the transaction has mined
-  const [loading, setLoading] = useState(false);
-
-  const reservedZCD = useSelector(selectReservedZCD);
-
-  const etherBalanceContract = useSelector(selectEthBalanceContract);
-
-  const web3Signer = useSelector(selectWeb3Signer);
-  const web3Provider = useSelector(selectWeb3Provider);
-  // This variable is the `0` number in form of a BigNumber
   const zero = BigNumber.from(0);
+
+      /** General state variables */
+  
+
+  const [reservedZCD, setReservedZCD] = useState(zero);
+
+  const [etherBalanceContract, setEtherBalanceContract] = useState(zero) ;
+
+  const [etherBalanceUser, setEtherBalanceUser] = useState(zero);
+
  
-  /** Variables to keep track of swap functionality */
-  // Amount that the user wants to swap
-  const [swapAmount, setSwapAmount] = useState("");
+  const [ swapAmountWei, setSwapAmountWei] = useState(zero);
+  // This variable is the `0` number in form of a BigNumber
+ 
+ 
+  
   // This keeps track of the number of tokens that the user would receive after a swap completes
   const [tokenToBeReceivedAfterSwap, settokenToBeReceivedAfterSwap] =
     useState(zero);
+
   // Keeps track of whether  `Eth` or `zankoocode` token is selected. If `Eth` is selected it means that the user
   // wants to swap some `Eth` for some `zankoocode` tokens and vice versa if `Eth` is not selected
   const [ethSelected, setEthSelected] = useState(true);
 
 
-
-  /**** SWAP FUNCTIONS ****/
-
-  /**
-   * swapTokens: Swaps  `swapAmountWei` of Eth/zankoocode tokens with `tokenToBeReceivedAfterSwap` amount of Eth/zankoocode tokens.
-   */
-  const _swapTokens = async () => {
-    try {
-      // Convert the amount entered by the user to a BigNumber using the `parseEther` library from `ethers.js`
-      const swapAmountWei = utils.parseEther(swapAmount);
-      // Check if the user entered zero
-      // We are here using the `eq` method from BigNumber class in `ethers.js`
-      if (!swapAmountWei.eq(zero)) {
-        dispatch(getSigner())
-        console.log(web3Signer.getAddress())
-        const signer = web3Signer;
-        setLoading(true);
-        // Call the swapTokens function from the `utils` folder
-        await swapTokens(
-          signer,
-          swapAmountWei,
-          tokenToBeReceivedAfterSwap,
-          ethSelected
-        );
-        window.alert("token swap: successful");
-        setLoading(false);
-        // Get all the updated amounts after the swap
-        
-        setSwapAmount("");
-      }
-    } catch (err) {
-      console.error(err);
-      setLoading(false);
-      setSwapAmount("");
+  // the account of the user
+  const account = useAccount();
+ 
+  // getEtherBalanceUser will get the amount of ether of the user
+  const getEtherBalanceUser = useBalance({
+    address: account.address,
+    onSuccess(data) {
+      
+      setEtherBalanceUser(data)
     }
-  };
+  })
 
-  /**
-   * _getAmountOfTokensReceivedFromSwap:  Returns the number of Eth/zankoocode tokens that can be received
-   * when the user swaps `_swapAmountWEI` amount of Eth/zankoocode tokens.
-   */
-  const _getAmountOfTokensReceivedFromSwap = async (_swapAmount) => {
-    try {
-      // Convert the amount entered by the user to a BigNumber using the `parseEther` library from `ethers.js`
-      const _swapAmountWEI = utils.parseEther(_swapAmount.toString());
-      // Check if the user entered zero
-     
-      // We are here using the `eq` method from BigNumber class in `ethers.js`
-      if (!_swapAmountWEI.eq(zero)) {
-        dispatch(getProvider())
-        const provider = web3Provider;
-        // Get the amount of ether in the contract
-        const _ethBalance = etherBalanceContract;
-        // Call the `getAmountOfTokensReceivedFromSwap` from the utils folder
-        const amountOfTokens = await getAmountOfTokensReceivedFromSwap(
-          _swapAmountWEI,
-          provider,
-          ethSelected,
-          _ethBalance,
-          reservedZCD
-        );
-        settokenToBeReceivedAfterSwap(amountOfTokens);
-      } else {
-        settokenToBeReceivedAfterSwap(zero);
-      }
-    } catch (err) {
-      console.error(err);
+  // reserveZCDexchange will get the reserve amount of ZCD in the contract
+  const reserveZCDexchange = useContractRead({
+    address: EXCHANGE_CONTRACT_ADDRESS,
+    abi: EXCHANGE_CONTRACT_ABI,
+    functionName: 'getReserve',
+    onSuccess(data) {
+      setReservedZCD(data)
     }
-  };
+  });
 
-  /*** END ***/
+  // getEtherBalanceContract will get the ether balance of the contract
+    const getEtherBalanceContract = useBalance({
+      address: EXCHANGE_CONTRACT_ADDRESS,
+      onSuccess(data){
+        setEtherBalanceContract(data)
+      }
+    })
 
 
-  if (loading) {
+    // getAmountsAfterSwapEther will call a function in the contract that calculate the amount of token after swap
+  const {refetch: getAmountsAfterSwapEther} = useContractRead({
+      address: EXCHANGE_CONTRACT_ADDRESS,
+      abi: EXCHANGE_CONTRACT_ABI,
+      functionName: 'getAmountOfTokens',
+      args: [swapAmountWei, etherBalanceContract.value, reservedZCD],
+      onSuccess(data){
+        console.log(data)
+        settokenToBeReceivedAfterSwap(data)
+      },
+      enabled: false
+  });
+
+  // getAmountsAfterSwapZCD will call a function in the contract that calculate the amount of token after swap
+  const {refetch: getAmountsAfterSwapZCD} = useContractRead({
+    address: EXCHANGE_CONTRACT_ADDRESS,
+    abi: EXCHANGE_CONTRACT_ABI,
+    functionName: 'getAmountOfTokens',
+    args: [swapAmountWei, reservedZCD, etherBalanceContract.value],
+    onSuccess(data){
+      settokenToBeReceivedAfterSwap(data)
+    },
+    enabled: false
+  })
+
+  // for swapping ZCD the amount of token first should be approved which approveToken function does it
+  const {write: approveToken, isSuccess: isSuccessApproveToken} = useContractWrite({
+    address: TOKEN_CONTRACT_ADDRESS,
+    abi: TOKEN_CONTRACT_ABI,
+    functionName: 'approve',
+    args: [EXCHANGE_CONTRACT_ADDRESS, swapAmountWei]
+  })
+
+  // after approvde token swapZankoocodeTokenToEth will be invoked with swap ZCD into Eth
+ const { write: swapZankoocodeTokenToEth, isLoading: isLoadingSwapZankoocodeTokenToEth} = useContractWrite({
+  address: EXCHANGE_CONTRACT_ADDRESS,
+  abi: EXCHANGE_CONTRACT_ABI,
+  functionName: 'zankoocodeTokenToEth',
+  args: [swapAmountWei, tokenToBeReceivedAfterSwap],
+  overrides: {
+    gasLimit: 80000
+  }
+ })
+
+ // swapEthTozankoocodeToken function will swap eth (in wei) into ZCD token
+  const {write: swapEthTozankoocodeToken, isLoading: isLoadingSwapEthTozankoocodeToken} = useContractWrite({
+    address: EXCHANGE_CONTRACT_ADDRESS,
+    abi: EXCHANGE_CONTRACT_ABI,
+    functionName: 'ethTozankoocodeToken',
+    args: [tokenToBeReceivedAfterSwap],
+    overrides: {
+      value: swapAmountWei,
+      gasLimit: 80000
+    },
+    onSettled(){
+      alert('swap was successful')
+    }
+
+  })
+  
+  
+
+
+  if (isLoadingSwapEthTozankoocodeToken || isLoadingSwapZankoocodeTokenToEth) {
     return (
       <div className="loading-time-sec">
     <button className="loading">Waiting...</button>
@@ -126,12 +148,23 @@ function SwapTab () {
         type="number"
         placeholder="Amount"
         onChange={async (e) => {
-          setSwapAmount(e.target.value || "");
+          
           // Calculate the amount of tokens user would receive after the swap
-          await _getAmountOfTokensReceivedFromSwap(e.target.value || "0");
+          if (ethSelected){
+          
+          await setSwapAmountWei(utils.parseEther(e.target.value ) || "");
+         await getAmountsAfterSwapEther();
+          
+        } else if (!ethSelected){
+          
+          await setSwapAmountWei(BigNumber.from(utils.parseEther(e.target.value || "0")))
+          
+          await getAmountsAfterSwapZCD();
+          
+        }
         }}
         className="swap-input"
-        value={swapAmount}
+        
       />
       <select
         className="token-select"
@@ -140,8 +173,8 @@ function SwapTab () {
         onChange={async () => {
           setEthSelected(!ethSelected);
           // Initialize the values back to zero
-          await _getAmountOfTokensReceivedFromSwap(0);
-          setSwapAmount("");
+          
+          setSwapAmountWei("");
         }}
       >
         <option value="eth">Ethereum</option>
@@ -149,18 +182,43 @@ function SwapTab () {
       </select>
       <br />
       <div className="input-div">
-        {/* Convert the BigNumber to string using the formatEther function from ethers.js */}
+     
         {ethSelected
-          ? `You will get ${utils.formatEther(
-              tokenToBeReceivedAfterSwap
-            )} zankoocode Tokens`
-          : `You will get ${utils.formatEther(
-              tokenToBeReceivedAfterSwap
-            )} Eth`}
+          ? 
+          <div className="swap-sec">
+          You will get { utils.formatEther(tokenToBeReceivedAfterSwap._hex) } zankoocode Tokens
+            <button className="swap-button" onClick={swapEthTozankoocodeToken} disabled={swapAmountWei==0}>
+             Swap
+            </button>
+            </div>
+          : 
+          <div className="swap-sec">
+            <p>
+               You will get: <br/> { utils.formatEther(tokenToBeReceivedAfterSwap._hex) } Eth </p>
+              {isSuccessApproveToken ? 
+              <>
+                <button className="swap-button-sec" onClick={swapZankoocodeTokenToEth} disabled={swapAmountWei == 0}>
+                  Swap
+                </button>
+                <span className="tx-num2">
+                2/2
+               </span>
+               </>
+                 :
+                 <div className="swap-sec">
+                        <button className="approve-button" onClick={approveToken} disabled={swapAmountWei == 0}>
+                       Approve
+                       </button>
+                       <span className="tx-num2">
+                       1/2
+                      </span>
+                      </div>
+              }
+              
+              </div>
+                }
       </div>
-      <button className="swap-button" onClick={_swapTokens}>
-        Swap
-      </button>
+      
 
       <div className="image-div" >
             <img src="https://ipfs.io/ipfs/QmPu2y3gdiB5agUkiBBL15TFBHTtKMy6wP4TNuALdcYhkm"/>
