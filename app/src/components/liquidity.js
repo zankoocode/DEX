@@ -222,26 +222,7 @@ function LiquidityTab () {
                      className="input-ether-amount"
                    />
                    
-                   <input
-                     type="number"
-                     placeholder="Amount of zankoocode tokens"
-                     style={{border: colorBorderZCD}}
-                     onChange={
-                       (e) => {
-                         if (e.target.value > utils.formatEther(tokenBalanceUser)){
-                           setColorBorderZCD("1.5px solid red")
-                           
-                         } else {
-                           setColorBorderZCD("1.5px solid green")
-                           setAddZCDTokens(
-                             BigNumber.from(utils.parseEther(e.target.value || "0"))
-                           )
-                         }
-                       }
-                       
-                     }
-                     className="input-zankoocode-amount"
-                   />
+                  
                    {
                     isSuccessApprove ? 
                     <>
@@ -252,7 +233,8 @@ function LiquidityTab () {
                    </span>
                    </>
                    :
-                    <><button className="addLiquidity-approve-btn" onClick={approveToken}disabled={_addEtherWei == 0}>
+                    <>
+                    <button className="addLiquidity-approve-btn" onClick={approveToken}disabled={_addEtherWei == 0}>
                     Approve
                   </button>
                   <span className="tx-num">
@@ -264,7 +246,18 @@ function LiquidityTab () {
                  </div>
                  
                ) : (
-                 <div className="addliq-sec">
+                <div className="addliq-sec">
+                   
+                   {
+                    isSuccessApprove ? <><button className="addLiquidity-approve-btn" onClick={addLiquidity}>
+                    Add
+                   </button>  <span className="tx-num">
+                    2/2
+                   </span>
+                   </>
+                   :
+                    <>
+                   
                    <input
                      type="number"
                      placeholder="Amount of Ether"
@@ -296,15 +289,6 @@ function LiquidityTab () {
                      {`You will need ${utils.formatEther(addZCDTokens)} zankoocode
                      Tokens`}
                    </div>
-                   {
-                    isSuccessApprove ? <><button className="addLiquidity-approve-btn" onClick={addLiquidity}>
-                    Add
-                   </button>  <span className="tx-num">
-                    2/2
-                   </span>
-                   </>
-                   :
-                    <>
                     <button className="addLiquidity-approve-btn" onClick={approveToken} disabled={_addEtherWei == 0}>
                     Approve
                   </button>
